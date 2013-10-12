@@ -1,7 +1,7 @@
 # Construct a backend for each container's IP
 <% domains.each_pair do |domain, hostnames| %>
  <% hostnames.each_with_index do | hostname, index | %>
-backend <%= domain + index.to_s %> {
+backend <%= domain.tr(".", "") + index.to_s %> {
   .host = "<%= hostname["hostname"] %>";
   .port = "<%= hostname["port"] %>";
   .probe = {
@@ -13,10 +13,10 @@ backend <%= domain + index.to_s %> {
   }
 }
   <% end %>
-director <%= domain + "_backend" %> round-robin {
+director <%= domain.tr(".", "") + "_backend" %> round-robin {
   <% hostnames.each_with_index do | hostname, index | %>
   {
-    .backend = <%= domain + index.to_s %>;
+    .backend = <%= domain.tr(".", "") + index.to_s %>;
   }
   <% end %>
 }
@@ -25,12 +25,11 @@ director <%= domain + "_backend" %> round-robin {
 # Respond to incoming requests and route accordingly
 sub vcl_recv {
 <% domains.each_pair do |domain, hostnames| %>
-  if(req.http.host == "<%= domain  %>") {
-    set req.backend = <%= domain + "_backend" %>;
-    return (lookup);
+  if(req.http.host == "<%= domain %>") {
+    set req.backend = <%= domain.tr(".", "") + "_backend" %>;
   }
-}
 <% end %>
+}
 
 # Output backend container serving the request
 sub vcl_fetch {

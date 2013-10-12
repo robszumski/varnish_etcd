@@ -19,7 +19,7 @@ recv_rules = ERB.new(recv_template)
 domains = Hash.new
 etcd_response.each_with_index do |domain_data, index|
   # Store the domain we're working with
-  domain = domain_data["key"].split('/')[-1].tr(".", "") 
+  domain = domain_data["key"].split('/')[-1] 
   # Request hostnames within the specifc domain directory
   directory = domain_data["key"]
   hostnames = `curl -L http://172.17.42.1:4001/v1/keys#{directory}`
@@ -37,5 +37,5 @@ etcd_response.each_with_index do |domain_data, index|
 end
 
 # Write rendered template into /etc/varnish/default.vcl
-#puts recv_rules.result()
+puts recv_rules.result()
 File.open('/etc/varnish/default.vcl', 'w') { |file| file.write(recv_rules.result()) }
