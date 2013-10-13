@@ -24,11 +24,17 @@ director <%= domain.tr(".", "") + "_backend" %> round-robin {
 
 # Respond to incoming requests and route accordingly
 sub vcl_recv {
-<% domains.each_pair do |domain, hostnames| %>
+<% domains.each_with_index do |(domain, hostnames), index| %>
+  <% if index == 0 %>
   if(req.http.host == "<%= domain %>") {
+  <% else %>
+  } else if(req.http.host == "<%= domain %>") {
+  <% end %>
     set req.backend = <%= domain.tr(".", "") + "_backend" %>;
-  }
 <% end %>
+  } else {
+    error 500 "No Suitable Backend";
+  }
 }
 
 # Output backend container serving the request
