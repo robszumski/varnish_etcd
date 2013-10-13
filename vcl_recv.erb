@@ -1,5 +1,5 @@
 # Construct a backend for each container's IP
-<% domains.each_pair do |domain, hostnames| %>
+<% domains_with_default.each_pair do |domain, hostnames| %>
  <% hostnames.each_with_index do | hostname, index | %>
 backend <%= domain.tr(".", "") + index.to_s %> {
   .host = "<%= hostname["hostname"] %>";
@@ -27,13 +27,16 @@ sub vcl_recv {
 <% domains.each_with_index do |(domain, hostnames), index| %>
   <% if index == 0 %>
   if(req.http.host == "<%= domain %>") {
+    set req.backend = <%= domain.tr(".", "") + "_backend" %>;
   <% else %>
   } else if(req.http.host == "<%= domain %>") {
-  <% end %>
     set req.backend = <%= domain.tr(".", "") + "_backend" %>;
+  <% end %>
 <% end %>
+  <% if (domains_with_default.has_key?("default")) %>
   } else {
-    error 500 "No Suitable Backend";
+    set req.backend = default_backend;
+  <% end %>
   }
 }
 

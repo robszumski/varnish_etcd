@@ -17,6 +17,7 @@ recv_rules = ERB.new(recv_template)
 
 # Construct array of etcd data
 domains = Hash.new
+domains_with_default = Hash.new
 etcd_response.each_with_index do |domain_data, index|
   # Store the domain we're working with
   domain = domain_data["key"].split('/')[-1] 
@@ -33,7 +34,9 @@ etcd_response.each_with_index do |domain_data, index|
     # Store hostnames
     formatted_hostnames << Hash["hostname" => hostname, "port" => port]
   end
-  domains[domain] = formatted_hostnames
+  ## Remove default route
+  domains_with_default[domain] = formatted_hostnames
+  domains = domains_with_default.reject {|domain,hostname| domain == "default"}
 end
 
 # Write rendered template into /etc/varnish/default.vcl
