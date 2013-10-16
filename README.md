@@ -15,6 +15,7 @@ Run a simple three node CoreOS cluster. To reduce costs, I opted to do DNS round
 
 1. You're running on CoreOS or a machine that has [etcd](http://coreos.com/docs/guides/etcd/) addressable on 172.17.42.1 (the `docker0` bridge) 
 2. Your CoreOS machine(s) is running on a cloud provider that has free networking between hosts. I use the hostname of the box to route traffic between instances.
+3. You're running at least 1 container that reports its domain as `default` which is used when no other domains are matched. This is necessary for a load balancer health check or a HTTP monitoring check that ensures the cluster is alive and responsive. 
 
 ## Set Up systemd Service Files
 
