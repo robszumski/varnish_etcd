@@ -1,7 +1,7 @@
 varnish_etcd
 ============
 
-Dynamically apply Varnish VCL based on data from etcd. Intended to be used on CoreOS from within a container.
+Dynamically apply Varnish VCL based on data from etcd. Intended to be used on CoreOS from within a container. This repository is primarily for the Ruby script, but contains a quick guide as well.
 
 ## Overview
 
